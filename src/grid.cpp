@@ -9,14 +9,6 @@
 #include "grid.h"
 #include "utils.h"
 
-#define NUM_CELLS_GRID 81
-#define NUM_CELLS_PER_LINE 9
-#define NUM_CELLS_NEIGHBORHOOD 9
-#define NUM_CELLS_PER_NEIGHBORHOOD_LINE 3
-#define EMPTY_CELL_VALUE -1
-#define MIN_CELL_VALUE 1
-#define MAX_CELL_VALUE 9
-
 grid::grid() :
 		matrix(NUM_CELLS_GRID, EMPTY_CELL_VALUE)
 {
@@ -25,6 +17,11 @@ grid::grid() :
 int& grid::cell_at(unsigned int i, unsigned int j)
 {
 	return matrix[j * NUM_CELLS_PER_LINE + i];
+}
+
+int& grid::cell_at(unsigned int i)
+{
+	return matrix[i];
 }
 
 std::vector<int> grid::cell_neighborhood(unsigned int i, unsigned int j)
@@ -65,6 +62,7 @@ std::vector<int> grid::cells_on_line(type_line type, unsigned int line)
 	return cells;
 }
 
+#include <iostream>
 void grid::randomize()
 {
 	for (unsigned int i = 0; i < NUM_CELLS_PER_LINE; ++i) {
@@ -73,12 +71,32 @@ void grid::randomize()
 			std::vector<int> temp_cells = cells_on_line(HORIZONTAL, j);
 			std::vector<int> possible_values;
 
+			print_vector("cell neighborhood:", constraint_cells);
+			print_vector("temp cells horizontal:", temp_cells);
+
 			copy(temp_cells.begin(), temp_cells.end(), std::back_inserter(constraint_cells));
 			temp_cells = cells_on_line(VERTICAL, i);
+
+			print_vector("temp cells vertical:", temp_cells);
+
 			copy(temp_cells.begin(), temp_cells.end(), std::back_inserter(constraint_cells));
+
+			print_vector("constraint_cells before erase:", constraint_cells);
+
 			constraint_cells.erase(std::remove(constraint_cells.begin(), constraint_cells.end(), EMPTY_CELL_VALUE), constraint_cells.end());
+
+			print_vector("constraint_cells after erase:", constraint_cells);
+
 			possible_values = all_missing_integers_in_interval(constraint_cells, MIN_CELL_VALUE, MAX_CELL_VALUE);
-			cell_at(i, j) = possible_values[generate_bounded_random_integer(0, possible_values.size() - 1)];
+
+			print_vector("possible values ::", possible_values);
+
+			if (possible_values.size() > 0)
+				cell_at(i, j) = possible_values[generate_bounded_random_integer(0, possible_values.size() - 1)];
+			else
+				std::cout << "bug" << std::endl;
+
+			std::cout << "cell_at(" << i << "," << j << ") = " << cell_at(i, j) << std::endl;
 		}
 	}
 }

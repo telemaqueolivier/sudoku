@@ -12,9 +12,28 @@
 #include <exception>
 #include <string>
 #include <cstdio>
+#include <sstream>
 
 unsigned int generate_bounded_random_integer(unsigned int a, unsigned int b);
 std::vector<int> all_missing_integers_in_interval(std::vector<int> curr_integers, int bound_min, int bound_max);
+
+struct increment
+{
+	int n;
+	increment(int beginning) :
+			n(beginning - 1)
+	{
+	}
+	int operator()()
+	{
+		return ++n;
+	}
+};
+
+void print_vector(std::string const &s, std::vector<int> v);
+
+#include "grid.h"
+std::ostream& operator<<(std::ostream &os, grid &g);
 
 class bad_interval: public std::exception
 {
@@ -30,9 +49,9 @@ public:
 
 	virtual const char* what() const throw ()
 	{
-		char buf[100];
-		snprintf(buf, sizeof(buf), "bad interval [%d,%d]", min, max);
-		return buf;
+		std::stringstream ss("bad interval [");
+		ss << min << "," << max << "]";
+		return ss.str().c_str();
 	}
 };
 

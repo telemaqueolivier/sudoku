@@ -14,18 +14,34 @@ unsigned int generate_bounded_random_integer(unsigned int a, unsigned int b)
 	return rand() % (b - a + 1) + a;
 }
 
-struct increment
+#include <iostream>
+#include <iterator>
+#include <string>
+void print_vector(std::string const &s, std::vector<int> v)
 {
-	int n;
-	increment() :
-			n(0)
-	{
+	std::cout << s << std::endl;
+	copy(v.begin(), v.end(), std::ostream_iterator<int>(std::cout, "\n"));
+}
+
+std::ostream& operator<<(std::ostream &os, grid &g)
+{
+	for (int i = 0; i < 9; ++i) {
+		for (int j = 0; j < 9; ++j) {
+			if (g.cell_at(i, j) == 0)
+				std::cout << " |";
+			else
+				std::cout << g.cell_at(i, j) << "|";
+		}
+
+		std::cout << std::endl;
+		for (int k = 0; k < 18; ++k) {
+			std::cout << "-";
+		}
+		std::cout << std::endl;
 	}
-	int operator()()
-	{
-		return ++n;
-	}
-};
+
+	return os;
+}
 
 std::vector<int> all_missing_integers_in_interval(std::vector<int> curr_integers, int bound_min, int bound_max)
 {
@@ -33,11 +49,11 @@ std::vector<int> all_missing_integers_in_interval(std::vector<int> curr_integers
 		throw bad_interval(bound_min, bound_max);
 	} else {
 		unsigned int curr_size = curr_integers.size();
-		std::vector<int> missing_integers(bound_max - bound_min + 1 - curr_size);
+		std::vector<int> missing_integers(bound_max - bound_min + 1);
 
-		std::generate(missing_integers.begin(), missing_integers.end(), increment());
+		std::generate(missing_integers.begin(), missing_integers.end(), increment(1));
 		for (unsigned int i = 0; i < curr_size; ++i) {
-			missing_integers.erase(std::remove(missing_integers.begin(), missing_integers.end(), curr_integers[i]));
+			missing_integers.erase(std::remove(missing_integers.begin(), missing_integers.end(), curr_integers[i]), missing_integers.end());
 		}
 
 		return missing_integers;
