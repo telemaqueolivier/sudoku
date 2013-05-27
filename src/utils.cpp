@@ -11,7 +11,10 @@
 
 unsigned int generate_bounded_random_integer(unsigned int a, unsigned int b)
 {
-	return rand() % (b - a + 1) + a;
+	if (a < b)
+		return rand() % (b - a + 1) + a;
+	else
+		throw bad_interval(a, b);
 }
 
 #include <iostream>
@@ -45,18 +48,27 @@ std::ostream& operator<<(std::ostream &os, grid &g)
 
 std::vector<int> all_missing_integers_in_interval(std::vector<int> curr_integers, int bound_min, int bound_max)
 {
-	if (bound_min == bound_max) {
+	if (bound_min == bound_max)
 		throw bad_interval(bound_min, bound_max);
-	} else {
+	else {
 		unsigned int curr_size = curr_integers.size();
 		std::vector<int> missing_integers(bound_max - bound_min + 1);
 
 		std::generate(missing_integers.begin(), missing_integers.end(), increment(1));
-		for (unsigned int i = 0; i < curr_size; ++i) {
+		for (unsigned int i = 0; i < curr_size; ++i)
 			missing_integers.erase(std::remove(missing_integers.begin(), missing_integers.end(), curr_integers[i]), missing_integers.end());
-		}
 
 		return missing_integers;
 	}
+}
+
+
+void clear_terminal()
+{
+#ifdef __unix__
+	system("clear");
+#elif _WIN32
+	system("cls");
+#endif
 }
 

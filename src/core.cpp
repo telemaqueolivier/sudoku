@@ -6,6 +6,7 @@
  */
 #include <algorithm>
 #include <exception>
+#include <iostream>
 #include "core.h"
 #include "utils.h"
 
@@ -25,11 +26,26 @@ void core::mask_cells(difficulty d)
 
 	current_grid = *resolved_grid;
 	std::generate(possible_indexes.begin(), possible_indexes.end(), increment(0));
-	for (unsigned int i = 0; i < num_cells_to_mask; ++i) {
-		index = generate_bounded_random_integer(0, NUM_CELLS_GRID - 1 - i);
-		current_grid.cell_at(possible_indexes[index]) = EMPTY_CELL_VALUE;
-		possible_indexes.erase(possible_indexes.begin() + index);
-	}
+	for (unsigned int i = 0; i < num_cells_to_mask; ++i)
+		try {
+			index = generate_bounded_random_integer(0, NUM_CELLS_GRID - 1 - i);
+			current_grid.cell_at(possible_indexes[index]) = EMPTY_CELL_VALUE;
+			possible_indexes.erase(possible_indexes.begin() + index);
+		} catch (std::exception const &e) {
+			std::cout << e.what() << std::endl;
+		}
+}
+
+void core::possible_values_for_cell(unsigned int line, unsigned int column, std::vector<int> &values)
+{
+	std::vector<int> constraint_cells = current_grid.cell_neighborhood(line, column);
+	std::vector<int> temp_cells = current_grid.cells_on_line(HORIZONTAL, column);
+
+	copy(temp_cells.begin(), temp_cells.end(), std::back_inserter(constraint_cells));
+	temp_cells = current_grid.cells_on_line(VERTICAL, line);
+	copy(temp_cells.begin(), temp_cells.end(), std::back_inserter(constraint_cells));
+	constraint_cells.erase(std::remove(constraint_cells.begin(), constraint_cells.end(), EMPTY_CELL_VALUE), constraint_cells.end());
+	values = all_missing_integers_in_interval(constraint_cells, MIN_CELL_VALUE, MAX_CELL_VALUE);
 }
 
 void core::fill_grid_under_constraint(unsigned int line, unsigned int column, int val)
@@ -41,16 +57,9 @@ void core::fill_grid_under_constraint(unsigned int line, unsigned int column, in
 	else if (val < MIN_CELL_VALUE || val > MAX_CELL_VALUE)
 		throw bad_cell_value(val);
 	else {
-		std::vector<int> constraint_cells = current_grid.cell_neighborhood(line, column);
-		std::vector<int> temp_cells = current_grid.cells_on_line(HORIZONTAL, column);
 		std::vector<int> possible_values;
 
-		copy(temp_cells.begin(), temp_cells.end(), std::back_inserter(constraint_cells));
-		temp_cells = current_grid.cells_on_line(VERTICAL, line);
-		copy(temp_cells.begin(), temp_cells.end(), std::back_inserter(constraint_cells));
-		constraint_cells.erase(std::remove(constraint_cells.begin(), constraint_cells.end(), EMPTY_CELL_VALUE), constraint_cells.end());
-		possible_values = all_missing_integers_in_interval(constraint_cells, MIN_CELL_VALUE, MAX_CELL_VALUE);
-		print_vector("possible values ::", possible_values);
+		possible_values_for_cell(line, column, possible_values);
 		if (possible_values.size() == 0)
 			throw no_possible_cell_value(line, column);
 		else if (std::find(possible_values.begin(), possible_values.end(), val) == possible_values.end())

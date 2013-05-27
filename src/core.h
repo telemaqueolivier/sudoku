@@ -23,6 +23,7 @@ public:
 	grid *resolved_grid;
 	grid current_grid;
 	std::map<int, int> map_difficulty;
+	void possible_values_for_cell(unsigned int line, unsigned int column, std::vector<int> &values);
 
 public:
 	core(grid *g);
@@ -45,7 +46,6 @@ struct bad_cell_value: public std::exception
 		return buf.c_str();
 	}
 };
-
 
 struct cell_exception : public std::exception
 {

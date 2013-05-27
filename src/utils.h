@@ -16,6 +16,7 @@
 
 unsigned int generate_bounded_random_integer(unsigned int a, unsigned int b);
 std::vector<int> all_missing_integers_in_interval(std::vector<int> curr_integers, int bound_min, int bound_max);
+void clear_terminal();
 
 struct increment
 {

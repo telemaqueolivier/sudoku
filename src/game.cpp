@@ -10,6 +10,7 @@
 #include <iostream>
 #include <exception>
 #include "utils.h"
+#include <cstdlib>
 
 game::game(difficulty d) :
 		c(&g)
@@ -23,12 +24,11 @@ void game::load_grid_from_file(std::string const &file_name)
 	std::fstream file(file_name.c_str());
 
 	if (file.is_open())
-		for (unsigned int i = 0; i < NUM_CELLS_PER_LINE; ++i) {
+		for (unsigned int i = 0; i < NUM_CELLS_PER_LINE; ++i)
 			for (unsigned int j = 0; j < NUM_CELLS_PER_LINE; ++j) {
 				if (!file.eof())
 					file >> g.cell_at(i, j);
 			}
-		}
 }
 
 std::string const& game::choose_file_randomly_from_dir(std::vector<std::string> const &file_names)
@@ -42,13 +42,14 @@ void game::run()
 	int val;
 
 	while (!c.is_grid_fully_filled()) {
+		clear_terminal();
 		std::cout << c.current_grid;
 		std::cout << "line column value ?" << std::endl;
 		std::cin >> line >> column >> val;
 
 		try {
 			c.fill_grid_under_constraint(line, column, val);
-		} catch (std::exception &e) {
+		} catch (std::exception const &e) {
 			std::cout << e.what() << std::endl;
 		}
 	}
