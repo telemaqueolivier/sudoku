@@ -4,12 +4,13 @@
  *  Created on: 25 mai 2013
  *      Author: telemaque
  */
-#include <cstdlib>
 #include <vector>
 #include <algorithm>
+#include <iostream>
 #include "utils.h"
 
-unsigned int generate_bounded_random_integer(unsigned int a, unsigned int b) throw (bad_interval)
+unsigned int generate_bounded_random_integer(unsigned int a, unsigned int b)
+		throw (bad_interval)
 {
 	if (a == b)
 		return a;
@@ -19,20 +20,41 @@ unsigned int generate_bounded_random_integer(unsigned int a, unsigned int b) thr
 		throw bad_interval(a, b);
 }
 
-#include <iostream>
-#include <iterator>
-#include <string>
-void print_vector(std::string const &s, std::vector<int> v)
+std::vector<int> all_missing_integers_in_interval(
+		std::vector<int> curr_integers, int bound_min, int bound_max)
 {
-	std::cout << s << std::endl;
-	copy(v.begin(), v.end(), std::ostream_iterator<int>(std::cout, "\n"));
+	if (bound_min == bound_max)
+		throw bad_interval(bound_min, bound_max);
+	else {
+		unsigned int curr_size = curr_integers.size();
+		std::vector<int> missing_integers(bound_max - bound_min + 1);
+
+		std::generate(missing_integers.begin(), missing_integers.end(),
+				increment(1));
+		for (unsigned int i = 0; i < curr_size; ++i)
+			missing_integers.erase(
+					std::remove(missing_integers.begin(),
+							missing_integers.end(), curr_integers[i]),
+					missing_integers.end());
+
+		return missing_integers;
+	}
 }
 
-std::ostream& operator<<(std::ostream &os, grid &g)
+void clear_terminal()
 {
-	for (int i = 0; i < 9; ++i) {
-		for (int j = 0; j < 9; ++j) {
-			if (g.cell_at(i, j) == 0)
+#ifdef __unix__
+	system("clear");
+#elif _WIN32
+	system("cls");
+#endif
+}
+
+std::ostream& operator<<(std::ostream &os, grid const &g)
+{
+	for (int i = 0; i < NUM_CELLS_PER_LINE; ++i) {
+		for (int j = 0; j < NUM_CELLS_PER_LINE; ++j) {
+			if (g.cell_at(i, j) == EMPTY_CELL_VALUE)
 				std::cout << " |";
 			else
 				std::cout << g.cell_at(i, j) << "|";
@@ -47,30 +69,3 @@ std::ostream& operator<<(std::ostream &os, grid &g)
 
 	return os;
 }
-
-std::vector<int> all_missing_integers_in_interval(std::vector<int> curr_integers, int bound_min, int bound_max)
-{
-	if (bound_min == bound_max)
-		throw bad_interval(bound_min, bound_max);
-	else {
-		unsigned int curr_size = curr_integers.size();
-		std::vector<int> missing_integers(bound_max - bound_min + 1);
-
-		std::generate(missing_integers.begin(), missing_integers.end(), increment(1));
-		for (unsigned int i = 0; i < curr_size; ++i)
-			missing_integers.erase(std::remove(missing_integers.begin(), missing_integers.end(), curr_integers[i]), missing_integers.end());
-
-		return missing_integers;
-	}
-}
-
-
-void clear_terminal()
-{
-#ifdef __unix__
-//	system("clear");
-#elif _WIN32
-	system("cls");
-#endif
-}
-

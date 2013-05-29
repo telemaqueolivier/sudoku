@@ -31,6 +31,7 @@ private:
 public:
 	grid();
 	int& cell_at(unsigned int i, unsigned int j);
+	int cell_at(unsigned int i, unsigned int j) const;
 	int& cell_at(unsigned int i);
 	std::vector<int> cell_neighborhood(unsigned int i, unsigned int j);
 	std::vector<int> cells_on_line(type_line type, unsigned int line);

@@ -19,6 +19,11 @@ int& grid::cell_at(unsigned int i, unsigned int j)
 	return matrix[j * NUM_CELLS_PER_LINE + i];
 }
 
+int grid::cell_at(unsigned int i, unsigned int j) const
+{
+	return matrix[j * NUM_CELLS_PER_LINE + i];
+}
+
 int& grid::cell_at(unsigned int i)
 {
 	return matrix[i];
@@ -28,11 +33,15 @@ std::vector<int> grid::cell_neighborhood(unsigned int i, unsigned int j)
 {
 	std::vector<int> neighborhood(NUM_CELLS_NEIGHBORHOOD);
 	unsigned int m = 0;
-	unsigned int first_neighbor_i = i / NUM_CELLS_PER_NEIGHBORHOOD_LINE * NUM_CELLS_PER_NEIGHBORHOOD_LINE;
-	unsigned int first_neighbor_j = j / NUM_CELLS_PER_NEIGHBORHOOD_LINE * NUM_CELLS_PER_NEIGHBORHOOD_LINE;
+	unsigned int first_neighbor_i = i / NUM_CELLS_PER_NEIGHBORHOOD_LINE
+			* NUM_CELLS_PER_NEIGHBORHOOD_LINE;
+	unsigned int first_neighbor_j = j / NUM_CELLS_PER_NEIGHBORHOOD_LINE
+			* NUM_CELLS_PER_NEIGHBORHOOD_LINE;
 
-	for (unsigned int k = first_neighbor_i; k < first_neighbor_i + NUM_CELLS_PER_NEIGHBORHOOD_LINE; ++k)
-		for (unsigned int l = first_neighbor_j; l < first_neighbor_j + NUM_CELLS_PER_NEIGHBORHOOD_LINE; ++l) {
+	for (unsigned int k = first_neighbor_i;
+			k < first_neighbor_i + NUM_CELLS_PER_NEIGHBORHOOD_LINE; ++k)
+		for (unsigned int l = first_neighbor_j;
+				l < first_neighbor_j + NUM_CELLS_PER_NEIGHBORHOOD_LINE; ++l) {
 			neighborhood[m] = cell_at(k, l);
 			++m;
 		}
@@ -70,13 +79,20 @@ void grid::randomize()
 			std::vector<int> temp_cells = cells_on_line(HORIZONTAL, j);
 			std::vector<int> possible_values;
 
-			copy(temp_cells.begin(), temp_cells.end(), std::back_inserter(constraint_cells));
+			copy(temp_cells.begin(), temp_cells.end(),
+					std::back_inserter(constraint_cells));
 			temp_cells = cells_on_line(VERTICAL, i);
-			copy(temp_cells.begin(), temp_cells.end(), std::back_inserter(constraint_cells));
-			constraint_cells.erase(std::remove(constraint_cells.begin(), constraint_cells.end(), EMPTY_CELL_VALUE), constraint_cells.end());
-			possible_values = all_missing_integers_in_interval(constraint_cells, MIN_CELL_VALUE, MAX_CELL_VALUE);
+			copy(temp_cells.begin(), temp_cells.end(),
+					std::back_inserter(constraint_cells));
+			constraint_cells.erase(
+					std::remove(constraint_cells.begin(),
+							constraint_cells.end(), EMPTY_CELL_VALUE),
+					constraint_cells.end());
+			possible_values = all_missing_integers_in_interval(constraint_cells,
+					MIN_CELL_VALUE, MAX_CELL_VALUE);
 			if (possible_values.size() > 0)
-				cell_at(i, j) = possible_values[generate_bounded_random_integer(0, possible_values.size() - 1)];
+				cell_at(i, j) = possible_values[generate_bounded_random_integer(
+						0, possible_values.size() - 1)];
 		}
 }
 

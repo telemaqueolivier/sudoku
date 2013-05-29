@@ -13,35 +13,43 @@
 #include <sstream>
 #include "utils.h"
 
-struct bad_cell_value: public enriched_exception {
-	bad_cell_value(int val) {
+struct bad_cell_value: public enriched_exception
+{
+	bad_cell_value(int val)
+	{
 		std::stringstream ss;
 		ss << "bad cell value = " << val;
 		set_msg(ss.str());
 	}
 };
 
-struct bad_cell: public enriched_exception {
-	bad_cell(unsigned int line, unsigned column) {
+struct bad_cell: public enriched_exception
+{
+	bad_cell(unsigned int line, unsigned column)
+	{
 		std::stringstream ss;
 		ss << "bad cell at (" << line << "," << column << ")";
 		set_msg(ss.str());
 	}
 };
 
-struct no_possible_cell_value: public enriched_exception {
-	no_possible_cell_value(unsigned int line, unsigned column) {
+struct no_possible_cell_value: public enriched_exception
+{
+	no_possible_cell_value(unsigned int line, unsigned column)
+	{
 		std::stringstream ss;
 		ss << "no possible value for cell at (" << line << "," << column << ")";
 		set_msg(ss.str());
 	}
 };
 
-enum difficulty {
+enum difficulty
+{
 	EASY, NORMAL, DIFFICULT
 };
 
-class core {
+class core
+{
 public:
 	grid *resolved_grid;
 	grid current_grid;
@@ -55,6 +63,7 @@ public:
 	void fill_grid_under_constraint(unsigned int line, unsigned int column,
 			int val) throw (bad_cell, bad_cell_value, no_possible_cell_value);
 	bool is_grid_fully_filled();
+	grid const& get_current_grid() const;
 	virtual ~core();
 };
 #endif /* CORE_H_ */
