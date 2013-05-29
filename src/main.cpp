@@ -20,7 +20,8 @@ int main()
 	srand(time(NULL));
 
 	try {
-		game sudoku(EASY);
+//		game sudoku(EASY);
+		game sudoku;
 		sudoku.run();
 	} catch (unable_to_launch_game &e) {
 		cout << e.what() << endl;

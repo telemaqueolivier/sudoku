@@ -32,6 +32,7 @@ game::game(difficulty d) throw (unable_to_launch_game) :
 		throw unable_to_launch_game(e.what());
 	}
 	c.set_current_grid(g);
+	c.mask_cells(d);
 }
 
 void game::save() const

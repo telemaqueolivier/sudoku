@@ -44,7 +44,7 @@ std::vector<int> all_missing_integers_in_interval(
 void clear_terminal()
 {
 #ifdef __unix__
-	system("clear");
+//	system("clear");
 #elif _WIN32
 	system("cls");
 #endif
