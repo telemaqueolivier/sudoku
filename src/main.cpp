@@ -18,8 +18,13 @@ using namespace std;
 int main()
 {
 	srand(time(NULL));
-	game sudoku(EASY);
-	sudoku.run();
-	cout << "end main" << endl;
+
+	try {
+		game sudoku(EASY);
+		sudoku.run();
+	} catch (unable_to_launch_game &e) {
+		cout << e.what() << endl;
+	}
+
 	return 0;
 }

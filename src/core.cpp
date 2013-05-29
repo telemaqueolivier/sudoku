@@ -48,7 +48,7 @@ void core::possible_values_for_cell(unsigned int line, unsigned int column, std:
 	values = all_missing_integers_in_interval(constraint_cells, MIN_CELL_VALUE, MAX_CELL_VALUE);
 }
 
-void core::fill_grid_under_constraint(unsigned int line, unsigned int column, int val)
+void core::fill_grid_under_constraint(unsigned int line, unsigned int column, int val) throw (bad_cell, bad_cell_value, no_possible_cell_value)
 {
 	int curr_val = current_grid.cell_at(line, column);
 

@@ -12,32 +12,60 @@
 #include "utils.h"
 #include <cstdlib>
 
-game::game(difficulty d) :
-		c(&g)
-{
-	load_grid_from_file("partie.txt");
+game::game(difficulty d) throw (unable_to_launch_game):
+		c(&g) {
+	load_grid_file_names("grid_names.txt");
+	try {
+		load_grid_randomly();
+	} catch (std::exception &e) {
+		throw unable_to_launch_game(e.what());
+	}
 	c.mask_cells(d);
 }
 
-void game::load_grid_from_file(std::string const &file_name)
-{
-	std::fstream file(file_name.c_str());
+void game::load_grid_randomly() throw (no_grid_to_load, unable_to_load_grid) {
+	try {
+		std::fstream grid_file(choose_file_randomly().c_str());
+		int val;
 
-	if (file.is_open())
-		for (unsigned int i = 0; i < NUM_CELLS_PER_LINE; ++i)
-			for (unsigned int j = 0; j < NUM_CELLS_PER_LINE; ++j) {
-				if (!file.eof())
-					file >> g.cell_at(i, j);
-			}
+		if (grid_file.is_open()) {
+			for (unsigned int i = 0; i < NUM_CELLS_PER_LINE; ++i)
+				for (unsigned int j = 0; j < NUM_CELLS_PER_LINE; ++j) {
+					if (grid_file >> val)
+						g.cell_at(i, j) = val;
+				}
+
+			grid_file.close();
+		} else {
+			grid_file.close();
+			throw unable_to_load_grid();
+		}
+	} catch (no_grids_found &e) {
+		throw no_grid_to_load();
+	}
 }
 
-std::string const& game::choose_file_randomly_from_dir(std::vector<std::string> const &file_names)
-{
-	return std::string();
+void game::load_grid_file_names(std::string const &conf_file_name) {
+	std::fstream conf_file(conf_file_name.c_str());
+	std::string grid_name;
+
+	if (conf_file.is_open())
+		while (conf_file >> grid_name)
+			grid_file_names.push_back(grid_name);
+
+	conf_file.close();
 }
 
-void game::run()
-{
+std::string const& game::choose_file_randomly() const throw (no_grids_found) {
+	try {
+		return grid_file_names[generate_bounded_random_integer(0,
+				grid_file_names.size() - 1)];
+	} catch (bad_interval &e) {
+		throw no_grids_found();
+	}
+}
+
+void game::run() {
 	unsigned int line, column;
 	int val;
 
@@ -55,8 +83,7 @@ void game::run()
 	}
 }
 
-game::~game()
-{
+game::~game() {
 	// TODO Auto-generated destructor stub
 }
 

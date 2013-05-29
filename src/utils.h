@@ -14,19 +14,16 @@
 #include <cstdio>
 #include <sstream>
 
-unsigned int generate_bounded_random_integer(unsigned int a, unsigned int b);
-std::vector<int> all_missing_integers_in_interval(std::vector<int> curr_integers, int bound_min, int bound_max);
+std::vector<int> all_missing_integers_in_interval(
+		std::vector<int> curr_integers, int bound_min, int bound_max);
 void clear_terminal();
 
-struct increment
-{
+struct increment {
 	int n;
 	increment(int beginning) :
-			n(beginning - 1)
-	{
+			n(beginning - 1) {
 	}
-	int operator()()
-	{
+	int operator()() {
 		return ++n;
 	}
 };
@@ -36,24 +33,37 @@ void print_vector(std::string const &s, std::vector<int> v);
 #include "grid.h"
 std::ostream& operator<<(std::ostream &os, grid &g);
 
-class bad_interval: public std::exception
-{
-private:
-	int min;
-	int max;
+class enriched_exception: public std::exception {
+	std::string msg;
 
-public:
-	bad_interval(int bound_min, int bound_max) :
-			min(bound_min), max(bound_max)
-	{
+protected:
+	void set_msg(std::string const &m) {
+
+		msg = m;
 	}
 
-	virtual const char* what() const throw ()
-	{
-		std::stringstream ss("bad interval [");
-		ss << min << "," << max << "]";
-		return ss.str().c_str();
+	std::string const& get_msg() const {
+		return msg;
+	}
+
+public:
+	virtual const char* what() const throw () {
+		return msg.c_str();
+	}
+
+	virtual ~enriched_exception() throw () {
+	}
+	;
+};
+
+struct bad_interval: public enriched_exception {
+	bad_interval(int bound_min, int bound_max) {
+		std::stringstream ss;
+		ss << "bad interval [" << bound_min << "," << bound_max << "]";
+		set_msg(ss.str());
 	}
 };
 
+unsigned int generate_bounded_random_integer(unsigned int a, unsigned int b)
+		throw (bad_interval);
 #endif /* UTILS_H_ */
