@@ -12,18 +12,18 @@
 #include "utils.h"
 #include <cstdlib>
 
-game::game() :
-		c(&g)
+game::game()
 {
 	try {
 		load_grid(SAVED_GAME_FILE_NAME);
 	} catch (unable_to_load_grid const &e) {
 		throw unable_to_launch_game(e.what());
 	}
+	c.set_current_grid(g);
 }
 
 game::game(difficulty d) throw (unable_to_launch_game) :
-		c(&g)
+		c(d)
 {
 	load_grid_file_names(GRID_NAMES_FILE_NAME);
 	try {
@@ -31,7 +31,7 @@ game::game(difficulty d) throw (unable_to_launch_game) :
 	} catch (std::exception &e) {
 		throw unable_to_launch_game(e.what());
 	}
-	c.mask_cells(d);
+	c.set_current_grid(g);
 }
 
 void game::save() const

@@ -51,14 +51,15 @@ enum difficulty
 class core
 {
 public:
-	grid *resolved_grid;
 	grid current_grid;
 	std::map<int, int> map_difficulty;
 	void possible_values_for_cell(unsigned int line, unsigned int column,
 			std::vector<int> &values);
 
 public:
-	core(grid *g);
+	core();
+	core(difficulty d);
+	void set_current_grid(grid const &g);
 	void mask_cells(difficulty d);
 	void fill_grid_under_constraint(unsigned int line, unsigned int column,
 			int val) throw (bad_cell, bad_cell_value, no_possible_cell_value);

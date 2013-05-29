@@ -10,12 +10,19 @@
 #include "core.h"
 #include "utils.h"
 
-core::core(grid *g) :
-		resolved_grid(g)
+core::core()
+{}
+
+core::core(difficulty d)
 {
 	map_difficulty[EASY] = 9;
 	map_difficulty[NORMAL] = 18;
 	map_difficulty[DIFFICULT] = 36;
+}
+
+void core::set_current_grid(grid const &g)
+{
+	current_grid = g;
 }
 
 void core::mask_cells(difficulty d)
@@ -24,7 +31,6 @@ void core::mask_cells(difficulty d)
 	unsigned index;
 	std::vector<int> possible_indexes(NUM_CELLS_GRID);
 
-	current_grid = *resolved_grid;
 	std::generate(possible_indexes.begin(), possible_indexes.end(),
 			increment(0));
 	for (unsigned int i = 0; i < num_cells_to_mask; ++i)
